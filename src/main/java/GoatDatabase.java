@@ -21,7 +21,7 @@ public class GoatDatabase {
                     birth_date TEXT,
                     father_name TEXT,
                     mother_name TEXT,
-                    color TEXT  -- Добавляем поле для окраса
+                    color TEXT
                 );
                 """;
 
@@ -77,27 +77,39 @@ public class GoatDatabase {
 
     public List<Goat> findGoatsByName(String name) {
         List<Goat> goats = new ArrayList<>();
-        String sql = "SELECT * FROM goats WHERE name LIKE ?";
+//        String sql = "SELECT * FROM goats WHERE name = ? COLLATE NOCASE";
+//
+//        try (Connection conn = DriverManager.getConnection(URL);
+//             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+//
+//            pstmt.setString(1, name.trim());
+//            ResultSet rs = pstmt.executeQuery();
+//
+//            while (rs.next()) {
+//                goats.add(extractGoat(rs));
+//            }
+        String sql = "SELECT * FROM goats";
 
         try (Connection conn = DriverManager.getConnection(URL);
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
-
-            pstmt.setString(1, "%" + name + "%");
-            ResultSet rs = pstmt.executeQuery();
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)) {
 
             while (rs.next()) {
-                goats.add(extractGoat(rs));
+                String dbName = rs.getString("name");
+                if (dbName != null && dbName.equalsIgnoreCase(name.trim())) {
+                    goats.add(extractGoat(rs));
+                }
             }
 
         } catch (SQLException e) {
             System.err.println("Ошибка при поиске коз по имени: " + e.getMessage());
         }
+               return goats;
 
-        return goats;
     }
 
     public boolean deleteGoatByName(String name) {
-        String sql = "DELETE FROM goats WHERE name = ?";
+        String sql = "DELETE FROM goats WHERE name = ? COLLATE NOCASE";
 
         try (Connection conn = DriverManager.getConnection(URL);
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -113,34 +125,42 @@ public class GoatDatabase {
     }
 
     public boolean updateGoatByName(String name, Goat newGoat) {
-        String sql = """
-                UPDATE goats SET 
+        List<Goat> goats = getAllGoats();
+
+        // Ищем козу с совпадающим именем без учёта регистра
+        for (Goat goat : goats) {
+            if (goat.getName() != null && goat.getName().equalsIgnoreCase(name.trim())) {
+                String sql = """
+                UPDATE goats SET
                     name = ?, gender = ?, breed = ?, birth_date = ?, father_name = ?, mother_name = ?, color = ?
                 WHERE name = ?;
-                """;
+            """;
 
-        try (Connection conn = DriverManager.getConnection(URL);
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+                try (Connection conn = DriverManager.getConnection(URL);
+                     PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
-            pstmt.setString(1, newGoat.getName());
-            pstmt.setString(2, newGoat.getGender());
-            pstmt.setString(3, newGoat.getBreed());
-            pstmt.setString(4, newGoat.getBirthDate().toString());
-            pstmt.setString(5, newGoat.getFatherName());
-            pstmt.setString(6, newGoat.getMotherName());
-            pstmt.setString(7, newGoat.getColor());
-            pstmt.setString(8, name);
+                    pstmt.setString(1, newGoat.getName());
+                    pstmt.setString(2, newGoat.getGender());
+                    pstmt.setString(3, newGoat.getBreed());
+                    pstmt.setString(4, newGoat.getBirthDate().toString());
+                    pstmt.setString(5, newGoat.getFatherName());
+                    pstmt.setString(6, newGoat.getMotherName());
+                    pstmt.setString(7, newGoat.getColor());
+                    pstmt.setString(8, goat.getName());
 
-            int rows = pstmt.executeUpdate();
-            return rows > 0;
+                    int rows = pstmt.executeUpdate();
+                    return rows > 0;
 
-        } catch (SQLException e) {
-            System.err.println("Ошибка при обновлении данных козы: " + e.getMessage());
+                } catch (SQLException e) {
+                    System.err.println("Ошибка при обновлении данных козы: " + e.getMessage());
+                    return false;
+                }
+            }
         }
 
+        System.out.println("Коза с именем '" + name + "' не найдена.");
         return false;
     }
-
     private Goat extractGoat(ResultSet rs) throws SQLException {
         return new Goat(
                 rs.getString("name"),
@@ -149,7 +169,7 @@ public class GoatDatabase {
                 LocalDate.parse(rs.getString("birth_date")),
                 rs.getString("father_name"),
                 rs.getString("mother_name"),
-                rs.getString("color")  // Получаем окрас
+                rs.getString("color")
         );
     }
 }

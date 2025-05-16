@@ -32,21 +32,7 @@ public class GoatApp {
                     List<Goat> goats = db.getAllGoats();
                     for (int i = 0; i < goats.size(); i++) {
                         Goat g = goats.get(i);
-                        System.out.println("Номер: " + (i + 1));  // Порядковый номер
-                        System.out.println("Имя: " + g.getName());
-                        System.out.println("Пол: " + g.getGender());
-                        System.out.println("Порода: " + g.getBreed());
-                        System.out.println("Дата рождения: " + g.getBirthDate());
-                        System.out.println("Отец: " + g.getFatherName());
-                        System.out.println("Мать: " + g.getMotherName());
-                        System.out.println("Окрас: " + g.getColor());  // Выводим окрас
-                        System.out.println("-----------------------------");
-                    }
-                }
-                case "3" -> {
-                    System.out.print("Введите имя: ");
-                    String name = scanner.nextLine();
-                    db.findGoatsByName(name).forEach(g -> {
+                        System.out.println("Номер: " + (i + 1));
                         System.out.println("Имя: " + g.getName());
                         System.out.println("Пол: " + g.getGender());
                         System.out.println("Порода: " + g.getBreed());
@@ -55,7 +41,27 @@ public class GoatApp {
                         System.out.println("Мать: " + g.getMotherName());
                         System.out.println("Окрас: " + g.getColor());
                         System.out.println("-----------------------------");
-                    });
+                    }
+                }
+                case "3" -> {
+                    System.out.print("Введите имя: ");
+                    String name = scanner.nextLine();
+                    List<Goat> foundGoats = db.findGoatsByName(name);
+
+                    if (foundGoats.isEmpty()) {
+                        System.out.println("Коза с таким именем не найдена.");
+                    } else {
+                        for (Goat g : foundGoats) {
+                            System.out.println("Имя: " + g.getName());
+                            System.out.println("Пол: " + g.getGender());
+                            System.out.println("Порода: " + g.getBreed());
+                            System.out.println("Дата рождения: " + g.getBirthDate());
+                            System.out.println("Отец: " + g.getFatherName());
+                            System.out.println("Мать: " + g.getMotherName());
+                            System.out.println("Окрас: " + g.getColor());
+                            System.out.println("-----------------------------");
+                        }
+                    }
                 }
                 case "4" -> {
                     System.out.print("Введите имя козы для удаления: ");
@@ -69,6 +75,13 @@ public class GoatApp {
                 case "5" -> {
                     System.out.print("Введите имя козы для обновления: ");
                     String name = scanner.nextLine();
+
+                    List<Goat> goats = db.findGoatsByName(name);
+                    if (goats.isEmpty()) {
+                        System.out.println("Коза с таким именем не найдена.");
+                        break;  // Возврат в главное меню
+                    }
+
                     Goat goat = readGoatFromUser(scanner);
                     if (db.updateGoatByName(name, goat)) {
                         System.out.println("Данные козы обновлены.");
