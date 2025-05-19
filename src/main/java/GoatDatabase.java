@@ -109,17 +109,23 @@ public class GoatDatabase {
     }
 
     public boolean deleteGoatByName(String name) {
-        String sql = "DELETE FROM goats WHERE name = ? COLLATE NOCASE";
+//        List<Goat> goats = getAllGoats();
+//        for (Goat goat : goats) {
+//            if (goat.getName() != null && goat.getName().equalsIgnoreCase(name.trim())) {
 
-        try (Connection conn = DriverManager.getConnection(URL);
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+                String sql = "DELETE FROM goats WHERE  name = ? COLLATE NOCASE ";
 
-            pstmt.setString(1, name);
-            int rows = pstmt.executeUpdate();
-            return rows > 0;
-        } catch (SQLException e) {
-            System.err.println("Ошибка при удалении козы: " + e.getMessage());
-        }
+                try (Connection conn = DriverManager.getConnection(URL);
+                     PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+                    pstmt.setString(1, name);
+                    int rows = pstmt.executeUpdate();
+                    return rows > 0;
+                } catch (SQLException e) {
+                    System.err.println("Ошибка при удалении козы: " + e.getMessage());
+                }
+//            }
+//        }
 
         return false;
     }
