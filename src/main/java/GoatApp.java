@@ -8,7 +8,7 @@ import java.util.Scanner;
 public class GoatApp {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
         GoatDatabase db = new GoatDatabase();
 
         while (true) {
@@ -36,7 +36,7 @@ public class GoatApp {
                         System.out.println("Имя: " + g.getName());
                         System.out.println("Пол: " + g.getGender());
                         System.out.println("Порода: " + g.getBreed());
-                        System.out.println("Дата рождения: " + g.getBirthDate());
+                        System.out.println("Дата рождения: " + (g.getBirthDate()).format(formatter));
                         System.out.println("Отец: " + g.getFatherName());
                         System.out.println("Мать: " + g.getMotherName());
                         System.out.println("Окрас: " + g.getColor());
@@ -55,7 +55,7 @@ public class GoatApp {
                             System.out.println("Имя: " + g.getName());
                             System.out.println("Пол: " + g.getGender());
                             System.out.println("Порода: " + g.getBreed());
-                            System.out.println("Дата рождения: " + g.getBirthDate());
+                            System.out.println("Дата рождения: " + (g.getBirthDate()).format(formatter));
                             System.out.println("Отец: " + g.getFatherName());
                             System.out.println("Мать: " + g.getMotherName());
                             System.out.println("Окрас: " + g.getColor());
@@ -99,6 +99,8 @@ public class GoatApp {
     }
 
     private static Goat readGoatFromUser(Scanner scanner) {
+        DateTimeFormatter formatter1 = DateTimeFormatter.ofPattern("dd-MM-yyyy");//
+
         System.out.print("Имя: ");
         String name = scanner.nextLine();
         System.out.print("Пол: ");
@@ -107,13 +109,13 @@ public class GoatApp {
         String breed = scanner.nextLine();
         LocalDate birthDate = null;
         while (birthDate == null) {
-            System.out.print("Дата рождения (ГГГГ-ММ-ДД): ");
+            System.out.print("Дата рождения (ДД-ММ-ГГГГ): ");//
             try {
-                birthDate = LocalDate.parse(scanner.nextLine());
+                birthDate = LocalDate.parse((scanner.nextLine()),formatter1);
             } catch (DateTimeParseException e) {
                 System.out.println("Неверный формат.");
             }
-        }
+       }
         System.out.print("Отец: ");
         String father = scanner.nextLine();
         System.out.print("Мать: ");
