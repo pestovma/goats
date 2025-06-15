@@ -10,6 +10,9 @@ public class GoatApp {
         Scanner scanner = new Scanner(System.in);
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
         GoatDatabase db = new GoatDatabase();
+        int a_proba;
+        a_proba= 1;
+
 
         while (true) {
             System.out.println("\n--- Меню ---");
