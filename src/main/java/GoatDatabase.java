@@ -3,8 +3,6 @@ import java.sql.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import java.time.format.DateTimeFormatter;
-
 
 public class GoatDatabase {
     private static final String URL = "jdbc:sqlite:goats.db";
