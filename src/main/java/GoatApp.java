@@ -13,6 +13,9 @@ public class GoatApp {
         int a_proba;
         a_proba= 1;
 
+        int b_importnat;
+        b_importnat = 13;
+
 
         while (true) {
             System.out.println("\n--- Меню ---");
